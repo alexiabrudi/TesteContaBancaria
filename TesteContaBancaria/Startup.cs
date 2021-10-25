@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.IO;
 using TesteContaBancaria.Domain.Interface;
 using TesteContaBancaria.Domain.Service;
 
@@ -30,7 +31,8 @@ namespace TesteContaBancaria
                     Description = "API - ContaBancaria",
                     Version = "V1"
                 });
-
+                var apiPath = Path.Combine(AppContext.BaseDirectory, "TesteContaBancaria.xml");
+                c.IncludeXmlComments(apiPath);
             });
             services.AddDistributedMemoryCache();
             services.AddSession(options =>

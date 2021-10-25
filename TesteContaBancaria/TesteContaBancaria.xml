@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TesteContaBancaria</name>
+    </assembly>
+    <members>
+        <member name="M:TesteContaBancaria.Controllers.ClienteController.Obter">
+            <summary>
+            Rota para obter o cliente logado, retornando nome, email e a senha do usuario
+            </summary>
+        </member>
+        <member name="M:TesteContaBancaria.Controllers.ClienteController.Cadastrar(TesteContaBancaria.Domain.ApiModel.ClienteApiModel)">
+            <summary>
+            Rota para cadastrar um cliente.
+            É necessário informar: Nome, email e senha
+            <param name="cliente"></param>
+            </summary>
+        </member>
+        <member name="M:TesteContaBancaria.Controllers.ClienteController.Excluir(System.String)">
+            <summary>
+            Rota para excluir um cliente cadastrado. É necessário informar o email.
+            </summary>
+            <param name="email"></param>
+        </member>
+        <member name="M:TesteContaBancaria.Controllers.ClienteController.Login(System.String,System.String)">
+            <summary>
+            Rota para logar utilizando email e senha, para ter acesso as informações da conta.
+            É necessário realizar o cadastro antes.
+            </summary>
+            <param name="email"></param>
+            <param name="senha"></param>
+        </member>
+        <member name="M:TesteContaBancaria.Controllers.ContaBancariaController.Obter">
+            <summary>
+            Rota para obter dados da conta.
+            É necessário realizar o login antes.
+            </summary>
+        </member>
+        <member name="M:TesteContaBancaria.Controllers.ContaBancariaController.Depositar(System.Double)">
+            <summary>
+            Rota para depositar na conta.
+            É necessário realizar o login antes.
+            Não é possível depositar valor negativo
+            </summary>
+            <param name="valor"></param>
+        </member>
+        <member name="M:TesteContaBancaria.Controllers.ContaBancariaController.Sacar(System.Double)">
+            <summary>
+            Rota para sacar da conta.
+            É necessário realizar o login antes.
+            Não é possível sacar menos do que possui na conta
+            </summary>
+            <param name="valor"></param>
+        </member>
+        <member name="M:TesteContaBancaria.Controllers.ContaBancariaController.Login(System.String,System.String)">
+            <summary>
+            Rota para logar utilizando email e senha, para ter acesso as informações da conta.
+            É necessário realizar o cadastro antes.
+            </summary>
+            <param name="email"></param>
+            <param name="senha"></param>
+        </member>
+    </members>
+</doc>
