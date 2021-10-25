@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TesteContaBancaria.Domain;
 using TesteContaBancaria.Domain.ApiModel;
 using TesteContaBancaria.Domain.Interface;
@@ -15,9 +12,11 @@ namespace TesteContaBancaria.Controllers
     public class ClienteController : ControllerBase
     {
         private readonly IClienteService _clienteService;
-        public ClienteController(IClienteService clienteService)
+        private readonly ILoginService _loginService;
+        public ClienteController(IClienteService clienteService, ILoginService loginService)
         {
             _clienteService = clienteService;
+            _loginService = loginService;
         }
 
 
@@ -31,6 +30,7 @@ namespace TesteContaBancaria.Controllers
         [ProducesResponseType(typeof(ErroModel), StatusCodes.Status400BadRequest)]
         public IActionResult Obter()
         {
+            LoginApiModel usuarioLogado = JsonConvert.DeserializeObject<LoginApiModel>(HttpContext.Session.GetString("SessionUser"));
 
             Result<ClienteApiModel> retorno = _clienteService.ObterCliente(usuarioLogado.Email, usuarioLogado.Senha);
 
@@ -75,6 +75,35 @@ namespace TesteContaBancaria.Controllers
             if (retorno.IsValid is false)
                 return BadRequest(retorno.Notifications);
             return NoContent();
+        }
+
+        /// <summary>
+        /// Rota para logar utilizando email e senha, para ter acesso as informações da conta.
+        /// É necessário realizar o cadastro antes.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="senha"></param>
+        [HttpGet]
+        [Route("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErroModel), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ErroModel), StatusCodes.Status400BadRequest)]
+        public IActionResult Login(string email, string senha)
+        {
+            var usuarioLogado = _loginService.Logar(email, senha);
+
+            if (usuarioLogado.IsValid is false)
+                return BadRequest(usuarioLogado.Notifications);
+
+            HttpContext.Session.SetString("SessionEmail", email);
+            HttpContext.Session.SetString("SessionSenha", senha);
+            HttpContext.Session.SetString("SessionUser", JsonConvert.SerializeObject(usuarioLogado));
+
+            return Ok($"Usuario {usuarioLogado.Object.Email} Logado com sucesso!");
+
+
+
         }
     }
 }

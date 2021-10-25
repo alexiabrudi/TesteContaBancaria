@@ -15,5 +15,6 @@ namespace TesteContaBancaria.Domain.Util
         public static string MENSAGEM_EMAIL_NECESSARIO = "Email Necessário";
         public static string MENSAGEM_SENHA_NECESSARIA = "Senha Necessária";
         public static string MENSAGEM_EMAIL_NECESSARIO_EXCLUSAO = "Email necessário para exclusão";
+        public static string MENSAGEM_CLIENTE_NAO_ENCONTRADO = "Cliente não encontrado";
     }
 }
