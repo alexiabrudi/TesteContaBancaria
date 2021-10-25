@@ -9,36 +9,40 @@ using TesteContaBancaria.Domain.Interface;
 namespace TesteContaBancaria.Controllers
 {
     [ApiController]
-    [Route("clientes")]
-    public class ClienteController : ControllerBase
+    [Route("contas-bancarias")]
+    public class ContaBancariaController : ControllerBase
     {
-        private readonly IClienteService _clienteService;
+        private readonly IContaBancariaService _contaBancariaService;
         private readonly ILoginService _loginService;
-        public ClienteController(IClienteService clienteService, ILoginService loginService)
+
+
+        public ContaBancariaController(IContaBancariaService contaBancariaService, ILoginService loginService)
         {
-            _clienteService = clienteService;
+            _contaBancariaService = contaBancariaService;
             _loginService = loginService;
         }
 
 
         /// <summary>
-        /// Rota para obter o cliente logado, retornando nome, email e a senha do usuario
+        /// Rota para obter dados da conta.
+        /// É necessário realizar o login antes.
         /// </summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErroModel), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(ErroModel), StatusCodes.Status400BadRequest)]
+
         public IActionResult Obter()
         {
             try
             {
                 LoginApiModel usuarioLogado = JsonConvert.DeserializeObject<LoginApiModel>(HttpContext.Session.GetString("SessionUser"));
 
-                if(usuarioLogado is null)
+                if (usuarioLogado is null)
                     return BadRequest("Necessário realizar o login.");
 
-                Result<ClienteApiModel> retorno = _clienteService.ObterCliente(usuarioLogado.Email, usuarioLogado.Senha);
+                Result<ContaBancariaApiModel> retorno = _contaBancariaService.Obter(usuarioLogado.Email, usuarioLogado.Senha);
 
                 if (retorno.IsValid is false)
                     return BadRequest(retorno.Notifications);
@@ -52,57 +56,73 @@ namespace TesteContaBancaria.Controllers
             {
                 throw new Exception("Necessário realizar o login.");
             }
+
         }
+
         /// <summary>
-        /// Rota para cadastrar um cliente.
-        /// É necessário informar: Nome, email e senha
-        /// <param name="cliente"></param>
+        /// Rota para depositar na conta.
+        /// É necessário realizar o login antes.
+        /// Não é possível depositar valor negativo
         /// </summary>
+        /// <param name="valor"></param>
         [HttpPost]
-        [ProducesResponseType(typeof(ClienteApiModel), StatusCodes.Status201Created)]
+        [Route("depositar")]
+        [ProducesResponseType(typeof(ContaBancariaApiModel), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErroModel), StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(ErroModel), StatusCodes.Status400BadRequest)]
-        public IActionResult Cadastrar(ClienteApiModel cliente)
+        public IActionResult Depositar(double valor)
         {
             try
             {
-                Result<ClienteApiModel> retorno = _clienteService.CadastrarCliente(cliente);
+                LoginApiModel usuarioLogado = JsonConvert.DeserializeObject<LoginApiModel>(HttpContext.Session.GetString("SessionUser"));
+
+                if (usuarioLogado is null)
+                    return BadRequest("Necessário realizar o login.");
+
+                Result<ContaBancariaApiModel> retorno = _contaBancariaService.Depositar(usuarioLogado.Email, usuarioLogado.Senha, valor);
 
                 if (retorno.IsValid is false)
                     return BadRequest(retorno.Notifications);
+                return Created("", retorno.Object);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Necessário realizar o login.");
+            }
+        }
 
+        /// <summary>
+        /// Rota para sacar da conta.
+        /// É necessário realizar o login antes.
+        /// Não é possível sacar menos do que possui na conta
+        /// </summary>
+        /// <param name="valor"></param>
+        [HttpPost]
+        [Route("sacar")]
+        [ProducesResponseType(typeof(ContaBancariaApiModel), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErroModel), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ErroModel), StatusCodes.Status400BadRequest)]
+        public IActionResult Sacar(double valor)
+        {
+            try
+            {
+                LoginApiModel usuarioLogado = JsonConvert.DeserializeObject<LoginApiModel>(HttpContext.Session.GetString("SessionUser"));
+
+                if (usuarioLogado is null)
+                    return BadRequest("Necessário realizar o login.");
+
+                Result<ContaBancariaApiModel> retorno = _contaBancariaService.Sacar(usuarioLogado.Email, usuarioLogado.Senha, valor);
+
+                if (retorno.IsValid is false)
+                    return BadRequest(retorno.Notifications);
                 return Created("", retorno.Object);
             }
 
             catch (Exception e)
             {
-                throw new Exception(e.Message);
-            }
-        }
-
-        /// <summary>
-        /// Rota para excluir um cliente cadastrado. É necessário informar o email.
-        /// </summary>
-        /// <param name="email"></param>
-        [HttpDelete]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ErroModel), StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(typeof(ErroModel), StatusCodes.Status400BadRequest)]
-        public IActionResult Excluir(string email)
-        {
-            try
-            {
-                Result retorno = _clienteService.ExcluirCliente(email);
-
-                if (retorno.IsValid is false)
-                    return BadRequest(retorno.Notifications);
-                return NoContent();
-            }
-
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
+                throw new Exception("Necessário realizar o login.");
             }
         }
 
@@ -132,12 +152,13 @@ namespace TesteContaBancaria.Controllers
                 HttpContext.Session.SetString("SessionUser", JsonConvert.SerializeObject(usuarioLogado.Object));
 
                 return Ok($"Usuario {usuarioLogado.Object.Email} Logado com sucesso!");
-            }
+            }          
 
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
+
     }
 }

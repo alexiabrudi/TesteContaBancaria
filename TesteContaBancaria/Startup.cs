@@ -45,6 +45,7 @@ namespace TesteContaBancaria
 
             services.AddScoped<IClienteService, ClienteService>();
             services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<IContaBancariaService, ContaBancariaService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
