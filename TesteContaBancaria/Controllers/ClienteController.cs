@@ -98,7 +98,7 @@ namespace TesteContaBancaria.Controllers
 
             HttpContext.Session.SetString("SessionEmail", email);
             HttpContext.Session.SetString("SessionSenha", senha);
-            HttpContext.Session.SetString("SessionUser", JsonConvert.SerializeObject(usuarioLogado));
+            HttpContext.Session.SetString("SessionUser", JsonConvert.SerializeObject(usuarioLogado.Object));
 
             return Ok($"Usuario {usuarioLogado.Object.Email} Logado com sucesso!");
 
