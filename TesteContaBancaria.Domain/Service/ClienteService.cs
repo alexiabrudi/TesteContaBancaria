@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TesteContaBancaria.ApiModel;
+using TesteContaBancaria.Domain.ApiModel;
 using TesteContaBancaria.Domain.Entidade;
 using TesteContaBancaria.Domain.Interface;
 using TesteContaBancaria.Domain.Util;

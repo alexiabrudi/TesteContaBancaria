@@ -1,4 +1,4 @@
-﻿namespace TesteContaBancaria.ApiModel
+﻿namespace TesteContaBancaria.Domain.ApiModel
 {
     public class ClienteApiModel
     {

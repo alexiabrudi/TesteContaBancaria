@@ -1,4 +1,4 @@
-﻿using TesteContaBancaria.ApiModel;
+﻿using TesteContaBancaria.Domain.ApiModel;
 
 namespace TesteContaBancaria.Domain.Interface
 {
