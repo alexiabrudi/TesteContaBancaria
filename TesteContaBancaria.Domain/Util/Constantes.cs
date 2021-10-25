@@ -11,5 +11,6 @@ namespace TesteContaBancaria.Domain.Util
         public static string MENSAGEM_NOME_INVALIDO = "Nome inválido";
         public static string MENSAGEM_EMAIL_INVALIDO = "Email inválido";
         public static string MENSAGEM_SENHA_INVALIDA = "Senha inválida";
+        public static string MENSAGEM_EMAIL_CADASTRADO = "Email já cadastrado";
     }
 }
