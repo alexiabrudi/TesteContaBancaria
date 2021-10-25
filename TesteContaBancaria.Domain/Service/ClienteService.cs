@@ -37,11 +37,30 @@ namespace TesteContaBancaria.Domain.Service
         }
         public Result<ClienteApiModel> ObterCliente(string email, string senha)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(email))
+                return Result<ClienteApiModel>.Error(new Notification(nameof(ObterCliente), Constantes.MENSAGEM_EMAIL_NECESSARIO));
+            if (string.IsNullOrEmpty(senha))
+                return Result<ClienteApiModel>.Error(new Notification(nameof(ObterCliente), Constantes.MENSAGEM_SENHA_NECESSARIA));
+
+            var cliente = ClientesUtil.FiltrarLista(email, senha);
+
+            if (cliente == null)
+                return null;
+
+            return Result<ClienteApiModel>.Ok(new ClienteApiModel()
+            {
+                Email = cliente.Email,
+                Nome = cliente.Nome,
+                Senha = cliente.Senha
+            });
         }
         public Result ExcluirCliente(string email)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(email))
+                return Result.Error(new Notification(nameof(ExcluirCliente), Constantes.MENSAGEM_EMAIL_NECESSARIO_EXCLUSAO));
+            List<Cliente> listaClientes = ClientesUtil.ListaCliente;
+            listaClientes.RemoveAll(x => x.Email == email);
+            return Result.Ok();
         }
 
         
