@@ -1,6 +1,7 @@
 ﻿using Flunt.Notifications;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using TesteContaBancaria.Domain.ApiModel;
@@ -37,12 +38,13 @@ namespace TesteContaBancaria.Domain.Service
         }
         public Result<ClienteApiModel> ObterCliente(string email, string senha)
         {
-            if (string.IsNullOrEmpty(email))
-                return Result<ClienteApiModel>.Error(new Notification(nameof(ObterCliente), Constantes.MENSAGEM_EMAIL_NECESSARIO));
-            if (string.IsNullOrEmpty(senha))
-                return Result<ClienteApiModel>.Error(new Notification(nameof(ObterCliente), Constantes.MENSAGEM_SENHA_NECESSARIA));
+            List<Notification> mensagensErros = new List<Notification>();
+            Validacao.ValidarEmailESenha(email, senha, mensagensErros);
 
-            var cliente = ClientesUtil.FiltrarLista(email, senha);
+            if (mensagensErros.Any())
+                return Result<ClienteApiModel>.Error(new ReadOnlyCollection<Notification>(mensagensErros));
+
+            Cliente cliente = ClientesUtil.FiltrarLista(email, senha);
 
             if (cliente == null)
                 return null;
